@@ -1,0 +1,50 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Courses
+{% endblock %}
+{% block main %}
+    <form action="/courses" method="post">
+        <div class="mb-3">
+            <label for="course">Course</label>
+            <input id="course" class="form-control mx-auto w-auto" autocomplete="off" type="text" name="course" value="Collindale" autofocus>
+        </div>
+        <div class="mb-3">
+            <label for="tee">Tee</label>
+            <input id="tee" class="form-control mx-auto w-auto" autocomplete="off" type="text" name="tee" value="White">
+        </div>
+        <div class="mb-3">
+            <label for="rating">Rating</label>
+            <input id="rating" class="form-control mx-auto w-auto" autocomplete="off" name="rating" value="69.3">
+        </div>
+        <div class="mb-3">
+            <label for="slope">Slope</label>
+            <input id="slope" class="form-control mx-auto w-auto" autocomplete="off" type="number" name="slope" value="130">
+        </div>
+        <button class="btn btn-primary" type="submit">Add Course</button>
+    </form>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th class="text-center">Golf Course</th>
+                <th class="text-center">Tee</th>
+                <th class="text-center">Rating</th>
+                <th class="text-center">Slope</th>
+            <tr>
+        </thead>
+        <tbody>
+            {% for course in courses %}
+                {% for tee in tees %}
+                    {% if tee.course_id == course.id %}
+                        <tr>
+                            <td class="text-center">{{ course.course }}</td>
+                            <td class="text-center">{{ tee.tee }}</td>
+                            <td class="text-center">{{ tee.rating }}</td>
+                            <td class="text-center">{{ tee.slope }}</td>
+                        </tr>
+                    {% endif %}
+                {% endfor %}
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
