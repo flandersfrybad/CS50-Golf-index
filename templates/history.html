@@ -1,0 +1,90 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    All Laps
+{% endblock %}
+{% block main %}
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th class="text-start">Golf Course</th>
+                <th class="text-center">Tee</th>
+                <th class="text-center">Score</th>
+                <th class="text-center">Rating</th>
+                <th class="text-center">Slope</th>
+                <th class="text-center">Differential</th>
+                <th class="text-center">Edit</th>
+                <th class="text-center">Active</th>
+                <th class="text-end">Date Posted</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in rows %}
+                <tr class="{{ '' if row.active else 'inactive-row' }}">
+                    <td class="text-start">{{ row.course }}</td>
+                    <td class="text-center">{{ row.tee }}</td>
+                    <td class="text-center">{{ row.score }}</td>
+                    <td class="text-center">{{ row.rating }}</td>
+                    <td class="text-center">{{ row.slope }}</td>
+                    <td class="text-center">{{ row.diff }}</td>
+                    <td class="border-0 text-center">
+                        <form action="/edit" method="get">
+                            <input type="hidden" name="id" value="{{ row.id }}">
+                            <input type="hidden" name="course" value="{{ row.course }}">
+                            <input type="hidden" name="tee" value="{{ row.tee }}">
+                            <input type="hidden" name="score" value="{{ row.score }}">
+                            <input type="hidden" name="rating" value="{{ row.rating }}">
+                            <input type="hidden" name="slope" value="{{ row.slope }}">
+                            <input type="hidden" name="diff" value="{{ row.diff }}">
+                            <input type="hidden" name="active" value="{{ row.active }}">
+                            <button class="btn btn-warning" type="submit" style="font-size: 12px;">Edit</button>
+                        </form>
+                        <td class="border-0 text-center">
+                            <form id="statusForm{{ row.id }}">
+                                <input type="hidden" name="id" value="{{ row.id }}">
+                                <input type="hidden" name="action" value="{{ 'deactivate' if row.active else 'activate' }}">
+                                <button class="btn btn {{ 'btn-success' if row.active else 'btn-secondary' }}" style="font-size: 12px;" id="statusButton{{ row.id }}" onclick="toggleStatus(event, {{ row.id }})">
+                                    {{ 'Active' if row.active else 'Inactive' }}
+                                </button>
+                            </form>
+                        </td>
+                        <script>
+                            function toggleStatus(event, id) {
+                                event.preventDefault(); // Prevent form submission
+                                let button = document.getElementById('statusButton' + id);
+                                let currentStatus = button.textContent.trim() === 'Active';
+                                let newStatus = !currentStatus;
+                                let action = newStatus ? 'activate' : 'deactivate';
+
+                                fetch('/toggle_status', {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json'
+                                    },
+                                    body: JSON.stringify({ id: id, action: action })
+                                })
+                                .then(response => response.json())
+                                .then(data => {
+                                    console.log('Response received:', data); // Log response
+                                    if (data.success) {
+                                        button.textContent = newStatus ? 'Active' : 'Inactive';
+                                        button.className = newStatus ? 'btn btn-success' : 'btn btn-secondary';
+                                        const row = button.closest('tr');
+                                        row.className = data.row_class;
+                                        console.log('Row updated:', row.className); // Log row update
+                                    } else {
+                                        alert('Failed to update status');
+                                    }
+                                })
+                                .catch(error => console.error('Error:', error));
+                            }
+                        </script>
+                    <td class="text-end">{{ row.posted }}</td>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot>
+        </tfoot>
+    </table>
+{% endblock %}
