@@ -1,0 +1,118 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Add
+{% endblock %}
+{% block main %}
+    <form action="/add" method="post">
+        <div class="mb-3">
+            <label for="course">Course</label>
+            <input type="hidden" name="course">
+            <select id="course" class="form-control mx-auto w-auto" name="course">
+                <option value="" disabled selected>Select a course</option>
+                {% for course in courses %}
+                    <option value={{ course.id }}>{{ course.course }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <script>
+            document.getElementById('course').addEventListener('change', () => {
+                    const id = parseFloat(document.getElementById('course').value);
+                    document.querySelector('input[name="course"]').value = document.querySelector('option[value="' + id + '"]').textContent;
+                    document.getElementById('tee').innerHTML="";
+                    // console.log(id);
+                    let teeList = [];
+                    console.log(teeList)
+                    for (let i = 0; i < {{ tees | tojson }}.length; i++) {
+                        if ({{ tees | tojson }}[i].course_id == id && !teeList.includes({{ tees | tojson }}[i].tee)) {
+                            teeList.push({{ tees | tojson }}[i]);
+                        }
+                    }
+                    let tee = document.getElementById('tee');
+
+                    let defaultOption = document.createElement("option");
+                    defaultOption.value = "";
+                    defaultOption.textContent = "Select a Tee";
+                    defaultOption.disabled = true;
+                    defaultOption.selected = true;
+                    tee.appendChild(defaultOption);
+
+                    for (let j = 0; j < teeList.length; j++) {
+                        let option = document.createElement("option");
+                        option.value = teeList[j].id;
+                        option.textContent = teeList[j].tee;
+                        tee.appendChild(option);
+                        fetch('/add', {
+                                method: 'get',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                }
+                            })
+                        }
+                    });
+        </script>
+        <div class="mb-3">
+            <label for="tee">Tee</label>
+            <input type="hidden" name="tee">
+            <select id="tee" class="form-control mx-auto w-auto" name="tee">
+                <option value="option">Select a Tee</option>
+            </select>
+        </div>
+        <script>
+            document.getElementById('tee').addEventListener('change', () => {
+                const id = parseFloat(document.getElementById('tee').value);
+                console.log(tee.textContent, id, tee.value);
+                document.querySelector('input[name="tee"]').value = document.querySelector('option[value="' + id + '"]').textContent;
+                console.log(tee.textContent, id, tee.value);
+                document.getElementById('rating').innerHTML="";
+                document.getElementById('slope').innerHTML="";
+                let slope_rating = [];
+                for (let i = 0; i < {{ tees | tojson }}.length; i++) {
+                    if ({{ tees | tojson }}[i].id == id) {
+                        rating.value = ({{ tees | tojson }}[i].rating);
+                        rating.textContent = ({{ tees | tojson }}[i].rating);
+                        slope.value = ({{ tees | tojson }}[i].slope);
+                        slope.textContent = ({{ tees | tojson }}[i].slope);
+                    }
+                }
+            });
+        </script>
+
+        <div class="mb-3">
+            <label for="score">Adjusted Gross Score</label>
+            <input id="score" class="form-control mx-auto w-auto" autocomplete="off" type="number" name="score" value="77">
+        </div>
+        <div class="mb-3">
+            <label for="rating">Rating</label>
+            <input id="rating" class="form-control mx-auto w-auto" autocomplete="off" type="number" name="rating" placeholder="69.3" value="rating" step="0.1">
+        </div>
+        <div class="mb-3">
+            <label for="slope">Slope</label>
+            <input id="slope" class="form-control mx-auto w-auto" autocomplete="off" type="number" name="slope" placeholder="130" value="slope">
+        </div>
+        <div class="mb-3">
+            <label for="differential">Differential</label>
+            <input id="differential" class="form-control mx-auto w-auto" type="number" name="differential" placeholder="(ags-rating)*(113/slope)" value="result" readonly>
+        </div>
+        <button class="btn btn-primary" type="submit">Add Score</button>
+
+        <script>
+            document.querySelectorAll('input').forEach(input => {
+                input.addEventListener('input', () => {
+                    const score = parseFloat(document.getElementById('score').value);
+                    const rating = parseFloat(document.getElementById('rating').value);
+                    const slope = parseFloat(document.getElementById('slope').value);
+                    console.log(score, rating, slope);
+                    if (!isNaN(score) && !isNaN(rating) && !isNaN(slope) && slope !== 0) {
+                        const result = (score - rating) * (113 / slope);
+                        console.log(result); // Add this before setting the differential value
+                        console.log(document.getElementById('differential').value);
+                        document.getElementById('differential').value = result.toFixed(1);
+                    } else {
+                        document.getElementById('differential').value = '';
+                    }
+                });
+            });
+        </script>
+    </form>
+{% endblock %}
