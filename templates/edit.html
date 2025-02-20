@@ -1,0 +1,53 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Edit
+{% endblock %}
+{% block main %}
+    <form action="/edit" method="post">
+        <div class="mb-3">
+            <input type="hidden" name="id" value="{{ id }}">
+        </div>
+        <div class="mb-3">
+            <label for="course">Course</label>
+            <input id="course" class="form-control mx-auto w-auto" autocomplete="off" type="text" name="course" value="{{ course }}" autofocus>
+        </div>
+        <div class="mb-3">
+            <label for="tee">Tee</label>
+            <input id="tee" class="form-control mx-auto w-auto" autocomplete="off" type="text" name="tee" value="{{ tee }}">
+        </div>
+        <div class="mb-3">
+            <label for="score">Adjusted Gross Score</label>
+            <input id="score" class="form-control mx-auto w-auto" autocomplete="off" type="number" name="score" value="{{ score }}">
+        </div>
+        <div class="mb-3">
+            <label for="rating">Rating</label>
+            <input id="rating" class="form-control mx-auto w-auto" autocomplete="off" type="number" name="rating" value="{{ rating }}">
+        </div>
+        <div class="mb-3">
+            <label for="slope">Slope</label>
+            <input id="slope" class="form-control mx-auto w-auto" autocomplete="off" type="number" name="slope" value="{{ slope }}">
+        </div>
+        <div class="mb-3">
+            <label for="differential">Differential</label>
+            <input id="differential" class="form-control mx-auto w-auto" type="number" name="differential" placeholder="(ags-rating)*(113/slope)" value="result" readonly>
+        </div>
+        <button class="btn btn-primary" type="submit">Edit</button>
+
+        <script>
+            document.querySelectorAll('input').forEach(input => {
+                input.addEventListener('input', () => {
+                    const score = parseFloat(document.getElementById('score').value);
+                    const rating = parseFloat(document.getElementById('rating').value);
+                    const slope = parseFloat(document.getElementById('slope').value);
+                    if (!isNaN(score) && !isNaN(rating) && !isNaN(slope) && slope !== 0) {
+                        const result = (score - rating) * (113 / slope);
+                        document.getElementById('differential').value = result.toFixed(1);
+                    } else {
+                        document.getElementById('differential').value = '';
+                    }
+                });
+            });
+        </script>
+    </form>
+{% endblock %}
