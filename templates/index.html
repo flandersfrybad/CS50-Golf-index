@@ -1,0 +1,65 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Laps
+{% endblock %}
+{% block main %}
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <td class="border-0 text-end" colspan="4">
+                    <td class="border-0 fw-bold text-end" style="font-size: 19px;">Handicap Index</td>
+                    <td class="border-0 fw-bold text-center" style="color: #2e944b; font-size: 19px;">{{ average }}</td>
+                </td>
+            </tr>
+            <tr>
+                <th class="text-start">Course</th>
+                <th class="text-center">Tee</th>
+                <th class="text-center">Score</th>
+                <th class="text-center">Rating</th>
+                <th class="text-center">Slope</th>
+                <th class="text-center">Differential</th>
+                <th class="text-center">Edit</th>
+                <th class="text-center">Delete</th>
+                <th class="text-end">Date Posted</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in rows %}
+                <tr>
+                    <td class="text-start">{{ row.course }}</td>
+                    <td class="text-center">{{ row.tee }}</td>
+                    <td class="text-center">{{ row.score }}</td>
+                    <td class="text-center">{{ row.rating }}</td>
+                    <td class="text-center">{{ row.slope }}</td>
+                    <td class="text-center">{{ '%.1f' | format(row.diff) }}</td>
+                    <td class="border-0 text-center">
+                        <form action="/edit" method="get">
+                            <input type="hidden" name="id" value="{{ row.id }}">
+                            <input type="hidden" name="course" value="{{ row.course }}">
+                            <input type="hidden" name="tee" value="{{ row.tee }}">
+                            <input type="hidden" name="score" value="{{ row.score }}">
+                            <input type="hidden" name="rating" value="{{ row.rating }}">
+                            <input type="hidden" name="slope" value="{{ row.slope }}">
+                            <input type="hidden" name="diff" value="{{ row.diff }}">
+                            <button class="btn btn-warning" type="submit" style="font-size: 12px;">Edit</button>
+                        </form>
+                    <td class="border-0 text-center">
+                        <form action="/delete" method="post" id="deleteForm" onsubmit="return confirmDelete()">
+                            <input type="hidden" name="id" value="{{ row.id }}">
+                            <button class="btn btn-danger" type="submit" style="font-size: 12px;">Delete</button>
+                        </form>
+                        <script>
+                            function confirmDelete() {
+                                return confirm("Are you sure you want to delete this item?");
+                            }
+                        </script>
+                    <td class="text-end">{{ row.posted }}</td>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot>
+        </tfoot>
+    </table>
+{% endblock %}
